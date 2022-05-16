@@ -11,7 +11,7 @@ Starting endpoints with same URL but different SOAP versions is possible but is 
 4) retry step 2 and 3: Both URLS return now with HTTP 404. Unexpected behavior: SOAP 1.1 route should still be reachable
 
 
-# Issue 1: NullPointerException due to CounterRepository
+# Issue 2: NullPointerException due to CounterRepository
 1) Uncomment line 37-40 in my-camel.xml to enable the CounterRepository bean
 2) Run DemoApplication to startup the tomcat and camel context. There are two routes which register the same URL but with different SOAP versions (SOAP 1.1 vs 1.2)
 3) Call http://127.0.0.1:9900/cxf/myendpoint with SOAP 1.1 or SOAP 1.2 payload (see above): Unexpected behavior: HTTP 200 without a repsonse body
