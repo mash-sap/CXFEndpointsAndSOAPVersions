@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+        targetNamespace="http://camel.apache.org/cxf/jaxws/provider"
+        xmlns:ns1="http://cxf.component.camel.apache.org/"
+        xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+        xmlns:tns="http://camel.apache.org/cxf/jaxws/provider"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <wsdl:types>
+        <xsd:schema attributeFormDefault="unqualified"
+                    elementFormDefault="qualified"
+                    targetNamespace="http://cxf.component.camel.apache.org/"
+                    xmlns="http://cxf.component.camel.apache.org/"
+                    xmlns:tns="http://camel.apache.org/cxf/jaxws/provider" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <xsd:element name="invoke" nillable="true" type="xsd:anyType"/>
+            <xsd:element name="invokeResponse" nillable="true" type="xsd:anyType"/>
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="invokeResponse">
+        <wsdl:part element="ns1:invokeResponse" name="invokeResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="invoke">
+        <wsdl:part element="ns1:invoke" name="invoke"/>
+    </wsdl:message>
+
+    <wsdl:portType name="soap_porttype">
+        <wsdl:operation name="invoke">
+            <wsdl:input message="tns:invoke" name="invoke"/>
+            <wsdl:output message="tns:invokeResponse" name="invokeResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="soap11" type="tns:soap_porttype">
+        <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="invoke">
+            <soap12:operation soapAction="" style="document"/>
+            <wsdl:input name="invoke">
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="invokeResponse">
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="service">
+        <wsdl:port
+                binding="tns:soap11" name="port11">
+            <soap12:address location="http://127.0.0.1:9900/cxf/manuel"/>
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

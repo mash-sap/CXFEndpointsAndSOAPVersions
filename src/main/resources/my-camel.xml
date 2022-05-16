@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xmlns:p1="http://camel.apache.org/cxf/jaxws/provider"
+       xmlns:sap-cxf-generic-request-reply="http://camel.apache.org/cxf/jaxws/provider"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+    <bean class="de.mash.demo.MyBean" id="myBean"/>
+
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+
+    <cxf:cxfEndpoint id="soapMessageEndpoint"
+                     wsdlURL="/soap11.wsdl"
+                     endpointName="p1:port"
+                     serviceName="p1:service"
+                     address="/myendpoint">
+        <cxf:properties>
+            <entry key="dataFormat" value="PAYLOAD"/>
+            <entry key="synchronous" value="true"/>
+        </cxf:properties>
+    </cxf:cxfEndpoint>
+
+    <cxf:cxfEndpoint id="soapMessageEndpoint2"
+                     wsdlURL="/soap12.wsdl"
+                     endpointName="sap-cxf-generic-request-reply:port12"
+                     serviceName="sap-cxf-generic-request-reply:service"
+                     address="/myendpoint">
+
+<!--    <cxf:cxfEndpoint id="soapMessageEndpoint2"-->
+<!--                     wsdlURL="/soap12.wsdl"-->
+<!--                     endpointName="p1:port"-->
+<!--                     serviceName="p1:service"-->
+<!--                     address="/myendpoint">-->
+        <cxf:properties>
+            <entry key="dataFormat" value="PAYLOAD"/>
+            <entry key="synchronous" value="true"/>
+        </cxf:properties>
+    </cxf:cxfEndpoint>
+
+    <camelContext id="test_context" xmlns="http://camel.apache.org/schema/spring">
+        <route id="eager">
+            <from uri="cxf:bean:soapMessageEndpoint"/>
+            <setBody>
+                <constant>&lt;ns1:invokeResponse xmlns:ns1=&quot;http://cxf.component.camel.apache.org/&quot;&gt;FIRST&lt;/ns1:invokeResponse&gt;</constant>
+            </setBody>
+        </route>
+
+        <route id="lazy" autoStartup="true">
+            <from uri="cxf:bean:soapMessageEndpoint2"/>
+            <setBody>
+                <constant>&lt;ns1:invokeResponse xmlns:ns1=&quot;http://cxf.component.camel.apache.org/&quot;&gt;SECOND&lt;/ns1:invokeResponse&gt;</constant>
+            </setBody>
+        </route>
+    </camelContext>
+
+</beans>
