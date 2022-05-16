@@ -20,11 +20,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xmlns:cxfcore="http://cxf.apache.org/core"
        xmlns:p1="http://camel.apache.org/cxf/jaxws/provider"
        xmlns:sap-cxf-generic-request-reply="http://camel.apache.org/cxf/jaxws/provider"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
-
+       http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
@@ -33,15 +34,25 @@
 
     <import resource="classpath:META-INF/cxf/cxf.xml"/>
 
+<!--    <bean class="org.apache.cxf.management.counters.CounterRepository" id="PerformanceCounterForSender_SOAP">-->
+<!--        <property name="bus" ref="cxf">-->
+<!--        </property>-->
+<!--    </bean>-->
+
     <cxf:cxfEndpoint id="soapMessageEndpoint"
                      wsdlURL="/soap11.wsdl"
                      endpointName="p1:port"
                      serviceName="p1:service"
+                     bus="cxf"
                      address="/myendpoint">
         <cxf:properties>
             <entry key="dataFormat" value="PAYLOAD"/>
             <entry key="synchronous" value="true"/>
+            <entry key="org.apache.cxf.management.counter.enabled" value="true"/>
         </cxf:properties>
+        <cxf:features>
+            <bean class="org.apache.cxf.management.interceptor.ResponseTimeFeature"/>
+        </cxf:features>
     </cxf:cxfEndpoint>
 
     <cxf:cxfEndpoint id="soapMessageEndpoint2"
@@ -49,17 +60,13 @@
                      endpointName="sap-cxf-generic-request-reply:port12"
                      serviceName="sap-cxf-generic-request-reply:service"
                      address="/myendpoint">
-
-<!--    <cxf:cxfEndpoint id="soapMessageEndpoint2"-->
-<!--                     wsdlURL="/soap12.wsdl"-->
-<!--                     endpointName="p1:port"-->
-<!--                     serviceName="p1:service"-->
-<!--                     address="/myendpoint">-->
         <cxf:properties>
             <entry key="dataFormat" value="PAYLOAD"/>
             <entry key="synchronous" value="true"/>
+            <entry key="org.apache.cxf.management.counter.enabled" value="true"/>
         </cxf:properties>
     </cxf:cxfEndpoint>
+
 
     <camelContext id="test_context" xmlns="http://camel.apache.org/schema/spring">
         <route id="eager">
